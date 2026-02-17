@@ -102,6 +102,8 @@ def generate():
 
         section = data.get("section")
         lesson = data.get("lesson")
+        difficulty = data.get("difficulty", "medium")
+
 
         if section not in BAC_PROGRAM:
             return jsonify({"error": "Section invalide"}), 400
@@ -110,6 +112,14 @@ def generate():
             return jsonify({
                 "error": f"{lesson} ne fait pas partie du programme de {section}."
             }), 400
+        difficulty_instruction = ""
+
+        if difficulty == "easy":
+          difficulty_instruction = "Les exercices doivent être simples, directs et courts."
+        elif difficulty == "medium":
+             difficulty_instruction = "Les exercices doivent être de niveau Bac standard avec raisonnement modéré."
+        elif difficulty == "hard":
+            difficulty_instruction = "Les exercices doivent être difficiles, avec raisonnement avancé et calculs plus complexes."
 
         completion = client.chat.completions.create(
             model="llama-3.1-8b-instant",
@@ -120,7 +130,9 @@ def generate():
                     "content": (
                         f"Tu es un expert en mathématiques du Baccalauréat tunisien "
                         f"pour la section {section}.\n\n"
-                        f"Génère exactement 3 exercices de niveau Bac "
+                        f"Niveau demandé : {difficulty.upper()}.\n"
+                        f"{difficulty_instruction}\n\n"
+                        f"Génère exactement 3 exercices strictement sur la leçon '{lesson}'.\n\n"
                         f"strictement sur la leçon '{lesson}'.\n\n"
                         "RÈGLES OBLIGATOIRES :\n"
                         "- Tout le texte doit être en français.\n"

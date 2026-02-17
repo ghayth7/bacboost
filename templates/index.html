@@ -65,17 +65,23 @@
 <select id="lesson">
     <option value="">Choisir une leçon</option>
 </select>
+<select id="difficultySelect">
+    <option value="easy">Facile</option>
+    <option value="medium" selected>Moyen</option>
+    <option value="hard">Difficile</option>
+</select>
+
 
 <button id="generateBtn">Générer les exercices</button>
 
 <hr>
 
 <div id="exam-container"></div>
-
 <script>
 
 const sectionSelect = document.getElementById("section");
 const lessonSelect = document.getElementById("lesson");
+const difficultySelect = document.getElementById("difficultySelect");
 
 sectionSelect.addEventListener("change", function () {
 
@@ -107,6 +113,7 @@ document.getElementById("generateBtn").addEventListener("click", function () {
 
     const section = sectionSelect.value;
     const lesson = lessonSelect.value;
+    const difficulty = difficultySelect.value;
 
     if (!section || !lesson) {
         alert("Veuillez sélectionner une section et une leçon.");
@@ -118,7 +125,11 @@ document.getElementById("generateBtn").addEventListener("click", function () {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ section: section, lesson: lesson })
+        body: JSON.stringify({
+            section: section,
+            lesson: lesson,
+            difficulty: difficulty
+        })
     })
     .then(res => res.json())
     .then(data => {
@@ -146,7 +157,7 @@ document.getElementById("generateBtn").addEventListener("click", function () {
                 <div id="solution-${index + 1}"></div>
             `;
 
-            div.dataset.question = question; // safer storage
+            div.dataset.question = question;
             container.appendChild(div);
         });
 
@@ -191,6 +202,7 @@ function getSolution(questionId) {
 }
 
 </script>
+
 
 </body>
 </html>
