@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BacBoost</title>
+
+    <!-- MathJax Config -->
+    <script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']]
+        },
+        svg: { fontCache: 'global' }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+
+        .question-box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        select, button {
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        hr {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 BacBoost - Générateur d'exercices Bac</h1>
+
+<select id="section">
+    <option value="">Choisir une section</option>
+    <option value="Mathematics">Mathématiques</option>
+    <option value="Science">Sciences</option>
+    <option value="Economics">Économie</option>
+    <option value="Technical">Technique</option>
+    <option value="Informatique">Informatique</option>
+</select>
+
+<select id="lesson">
+    <option value="">Choisir une leçon</option>
+</select>
+
+<button id="generateBtn">Générer les exercices</button>
+
+<hr>
+
+<div id="exam-container"></div>
+
+<script>
+
+const sectionSelect = document.getElementById("section");
+const lessonSelect = document.getElementById("lesson");
+
+sectionSelect.addEventListener("change", function () {
+
+    const section = sectionSelect.value;
+    lessonSelect.innerHTML = "<option value=''>Choisir une leçon</option>";
+
+    if (!section) return;
+
+    fetch(`/lessons/${section}`)
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            data.lessons.forEach(lesson => {
+                const option = document.createElement("option");
+                option.value = lesson;
+                option.textContent = lesson;
+                lessonSelect.appendChild(option);
+            });
+        });
+});
+
+
+document.getElementById("generateBtn").addEventListener("click", function () {
+
+    const section = sectionSelect.value;
+    const lesson = lessonSelect.value;
+
+    if (!section || !lesson) {
+        alert("Veuillez sélectionner une section et une leçon.");
+        return;
+    }
+
+    fetch("/generate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ section: section, lesson: lesson })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        const container = document.getElementById("exam-container");
+        container.innerHTML = "";
+
+        data.questions.forEach((question, index) => {
+
+            const div = document.createElement("div");
+            div.className = "question-box";
+
+            div.innerHTML = `
+                <h3>Exercice ${index + 1}</h3>
+                <div>${question}</div>
+                <br>
+                <button onclick="getSolution(${index + 1})">
+                    Voir la correction
+                </button>
+                <div id="solution-${index + 1}"></div>
+            `;
+
+            div.dataset.question = question; // safer storage
+            container.appendChild(div);
+        });
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+});
+
+
+function getSolution(questionId) {
+
+    const questionDiv = document.querySelectorAll(".question-box")[questionId - 1];
+    const questionText = questionDiv.dataset.question;
+
+    fetch("/solve", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question_text: questionText })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        const solutionDiv = document.getElementById("solution-" + questionId);
+
+        if (data.error) {
+            solutionDiv.innerHTML = "<p style='color:red;'>Erreur lors de la génération.</p>";
+            return;
+        }
+
+        solutionDiv.innerHTML = `
+            <p><strong>Correction :</strong></p>
+            <div>${data.solution}</div>
+        `;
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
