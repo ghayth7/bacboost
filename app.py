@@ -287,6 +287,97 @@ def chat():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+@app.route("/lesson_content", methods=["POST"])
+def lesson_content():
+    try:
+        data = request.get_json()
+
+        if not data or not data.get("section") or not data.get("lesson"):
+            return jsonify({"error": "Section et leçon requises"}), 400
+
+        section = data.get("section")
+        lesson = data.get("lesson")
+
+        if section not in BAC_PROGRAM:
+            return jsonify({"error": "Section invalide"}), 400
+
+        if lesson not in BAC_PROGRAM[section]:
+            return jsonify({"error": "Leçon invalide"}), 400
+
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=3000,
+
+            temperature=0.3,
+            messages=[
+                {
+                    "role": "system",
+                   "content": (
+    f"Tu es un professeur expert du Baccalauréat tunisien.\n\n"
+    f"Rédige un cours COMPLET, DÉTAILLÉ et EXHAUSTIF sur '{lesson}' "
+    f"pour la section {section}.\n\n"
+
+    "Le cours doit être suffisamment long pour couvrir tout le chapitre.\n"
+    "Il doit être pédagogique, structuré et sans fautes d’orthographe.\n\n"
+
+    "Structure STRICTE en Markdown :\n\n"
+
+    "# Titre du chapitre\n\n"
+
+    "## 1. Introduction détaillée\n"
+    "- Présentation du concept\n"
+    "- Pourquoi il est important\n"
+    "- Où il apparaît dans le Bac\n\n"
+
+    "## 2. Définitions importantes\n"
+    "- Définition claire et complète\n"
+    "- Explications supplémentaires\n\n"
+
+    "## 3. Propriétés et règles\n"
+    "- Propriété 1 avec explication\n"
+    "- Propriété 2 avec justification\n\n"
+
+    "## 4. Théorèmes importants\n"
+    "- Énoncé\n"
+    "- Conditions d'application\n"
+    "- Interprétation\n\n"
+
+    "## 5. Méthodes de résolution\n"
+    "Pour chaque méthode :\n"
+    "- Quand l'utiliser\n"
+    "- Étapes détaillées\n\n"
+
+    "## 6. Plusieurs exemples détaillés\n"
+    "Donne AU MOINS 3 exemples différents.\n"
+    "Chaque exemple doit être expliqué étape par étape.\n\n"
+
+    "## 7. Cas particuliers et erreurs fréquentes\n"
+    "- Erreur 1\n"
+    "- Erreur 2\n\n"
+
+    "## 8. Remarques importantes\n"
+    "- Points clés à retenir pour le Bac\n\n"
+
+    "IMPORTANT:\n"
+    "- Utilise des paragraphes espacés.\n"
+    "- Utilise des listes avec '-'.\n"
+    "- Utilise ## pour les sections.\n"
+    "- Les mathématiques doivent être entre $...$.\n"
+    "- Le texte doit être sans fautes d'orthographe.\n"
+    "- Ne sois PAS trop court.\n"
+)
+
+
+                }
+            ]
+        )
+
+        lesson_text = clean_latex(completion.choices[0].message.content)
+
+        return jsonify({"lesson": lesson_text})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

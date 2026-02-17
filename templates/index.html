@@ -18,9 +18,28 @@
 
 <style>
 body {
-    font-family: Arial;
-    margin: 40px;
-    background-color: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 40px;
+    background: linear-gradient(135deg, #e0f7fa, #f1f8ff);
+}
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+select, button, textarea {
+    font-size: 14px;
+}
+
+button {
+    background: #1976d2;
+    color: white;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
 }
 
 .main-layout {
@@ -96,6 +115,49 @@ button {
 #send-message:hover, #reset-chat:hover {
     background-color: #45a049;
 }
+.solution-content {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+}
+
+.solution-content.show {
+    max-height: 1000px; /* large enough */
+    opacity: 1;
+    margin-top: 10px;
+}
+.lesson-content {
+    line-height: 1.7;
+}
+
+.lesson-content h1 {
+    margin-top: 20px;
+    font-size: 26px;
+}
+
+.lesson-content h2 {
+    margin-top: 25px;
+    color: #1976d2;
+}
+
+.lesson-content h3 {
+    margin-top: 15px;
+}
+
+.lesson-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.lesson-content p {
+    margin-bottom: 12px;
+}
+#lesson-container {
+    margin-top: 20px;
+}
+
+
 </style>
 </head>
 
@@ -123,8 +185,13 @@ button {
 </select>
 
 <button id="generateBtn">Générer les exercices</button>
+<button id="lessonBtn">Voir le cour</button>
+
 
 <hr>
+<div id="lesson-container" class="question-box"></div>
+
+
 
 <div class="main-layout">
     <div class="exercise-area">
@@ -141,6 +208,8 @@ button {
         <button id="send-message">Envoyer</button>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 
 <script>
 
@@ -230,10 +299,13 @@ document.getElementById("generateBtn").addEventListener("click", function () {
                 <h3>Exercice ${index + 1}</h3>
                 <div>${question}</div>
                 <br>
-                <button onclick="getSolution(${index + 1})">
-                    Voir la correction
-                </button>
-                <div id="solution-${index + 1}"></div>
+              <button onclick="toggleSolution(${index + 1})" id="btn-${index + 1}">
+        Voir la correction
+          </button>
+
+
+                <div id="solution-${index + 1}" class="solution-content"></div>
+
             `;
 
             div.dataset.question = question;
@@ -248,10 +320,27 @@ document.getElementById("generateBtn").addEventListener("click", function () {
 // =========================
 // SOLVE QUESTION
 // =========================
-function getSolution(questionId) {
+function toggleSolution(questionId) {
+
+    const solutionDiv = document.getElementById("solution-" + questionId);
+    const button = document.getElementById("btn-" + questionId);
+
+    // If already visible → hide smoothly
+    if (solutionDiv.classList.contains("show")) {
+        solutionDiv.classList.remove("show");
+
+        setTimeout(() => {
+            solutionDiv.innerHTML = "";
+        }, 300);
+
+        button.textContent = "Voir la correction";
+        return;
+    }
 
     const questionDiv = document.querySelectorAll(".question-box")[questionId - 1];
     const questionText = questionDiv.dataset.question;
+
+    solutionDiv.innerHTML = "<p>⏳ Génération de la correction...</p>";
 
     fetch("/solve", {
         method: "POST",
@@ -261,21 +350,36 @@ function getSolution(questionId) {
     .then(res => res.json())
     .then(data => {
 
-        const solutionDiv = document.getElementById("solution-" + questionId);
-
         if (data.error) {
             solutionDiv.innerHTML = "<p style='color:red;'>Erreur lors de la génération.</p>";
             return;
         }
 
+        let formattedSolution = data.solution;
+
+        // Fix step formatting safely
+        formattedSolution = formattedSolution.replace(
+            /(Étape\s+\d+\s*:)/g,
+            "<br><br><strong>$1</strong>"
+        );
+
         solutionDiv.innerHTML = `
             <p><strong>Correction :</strong></p>
-            <div>${data.solution}</div>
+            <div>${formattedSolution}</div>
         `;
+
+        // Add animation AFTER content is inserted
+        setTimeout(() => {
+            solutionDiv.classList.add("show");
+        }, 10);
+
+        button.textContent = "Masquer la correction";
 
         if (window.MathJax) MathJax.typesetPromise();
     });
 }
+
+
 
 
 // =========================
@@ -341,6 +445,45 @@ resetChatButton.addEventListener("click", function () {
     chatHistory = [];
     chatHistoryContainer.innerHTML = "";
 });
+document.getElementById("lessonBtn").addEventListener("click", function () {
+
+    const section = sectionSelect.value;
+    const lesson = lessonSelect.value;
+
+    if (!section || !lesson) {
+        alert("Veuillez sélectionner une section et une leçon.");
+        return;
+    }
+
+    const lessonContainer = document.getElementById("lesson-container");
+
+    lessonContainer.innerHTML = "⏳ Génération du cours...";
+    lessonContainer.classList.add("show");
+
+    fetch("/lesson_content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ section, lesson })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.error) {
+            lessonContainer.innerHTML = "Erreur lors de la génération.";
+            return;
+        }
+
+      lessonContainer.innerHTML = `
+    <div class="lesson-content">
+        ${marked.parse(data.lesson)}
+    </div>
+`;
+
+
+        if (window.MathJax) MathJax.typesetPromise();
+    });
+});
+
 
 </script>
 
