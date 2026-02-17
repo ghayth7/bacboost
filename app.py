@@ -215,6 +215,79 @@ def solve():
 
 
 # =========================
+# =========================
+# AI TUTOR CHAT
+# =========================
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+
+        if not data or not data.get("message"):
+            return jsonify({"error": "Message requis"}), 400
+
+        section = data.get("section")
+        lesson = data.get("lesson")
+        difficulty = data.get("difficulty")
+        questions = data.get("questions", [])
+        history = data.get("history", [])
+        user_message = data.get("message")
+
+        # Build context block
+        context_text = (
+            f"Contexte actuel :\n"
+            f"- Section : {section}\n"
+            f"- Leçon : {lesson}\n"
+            f"- Difficulté : {difficulty}\n\n"
+            f"Exercices générés :\n"
+        )
+
+        for i, q in enumerate(questions):
+            context_text += f"\nExercice {i+1}:\n{q}\n"
+
+        # Base system tutor instructions
+        system_prompt = (
+            "Tu es un tuteur interactif pour le Baccalauréat tunisien.\n"
+            "Tu dois guider l'élève étape par étape.\n"
+            "NE DONNE JAMAIS la solution complète immédiatement.\n"
+            "Pose des questions pour stimuler la réflexion.\n"
+            "Si l'élève demande 'donne la solution complète', "
+            "donne-la seulement après au moins une tentative de guidage.\n\n"
+            "Règles mathématiques :\n"
+            "- Les explications normales ne doivent PAS être dans $...$.\n"
+            "- Seules les expressions mathématiques doivent être entre $...$ ou $$...$$.\n"
+            "- N'utilise jamais ^ ou _ sans accolades {}.\n"
+            "- Écris toujours en français clair.\n"
+        )
+
+        # Build messages list for Groq
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": context_text}
+        ]
+
+        # Add conversation history
+        for msg in history:
+            messages.append(msg)
+
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            temperature=0.5,
+            messages=messages
+        )
+
+        reply = completion.choices[0].message.content
+        reply = clean_latex(reply)
+
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

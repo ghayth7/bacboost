@@ -17,6 +17,52 @@
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
     <style>
+        #chat-container {
+    position: fixed;
+    top: 10%;
+    right: 0;
+    width: 300px;
+    height: 80%;
+    background-color: white;
+    box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-history {
+    overflow-y: auto;
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+
+#user-message {
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+}
+
+#send-message, #reset-chat {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+#send-message:hover, #reset-chat:hover {
+    background-color: #45a049;
+}
+
         body {
             font-family: Arial;
             margin: 40px;
@@ -75,9 +121,32 @@
 <button id="generateBtn">Générer les exercices</button>
 
 <hr>
+<!-- Chat Panel (Right Side) -->
+ <div id="exam-container"></div>
+<div id="chat-container">
+    <div id="chat-header">
+        <h3>AI Tutor</h3>
+        <button id="reset-chat">Reset Chat</button>
+    </div>
+    <div id="chat-history">
+        <!-- Chat history will appear here -->
+    </div>
+    <textarea id="user-message" placeholder="Posez votre question..."></textarea>
+    <button id="send-message">Envoyer</button>
+</div>
 
-<div id="exam-container"></div>
+
+
 <script>
+    let chatHistory = []; // Store conversation history
+    let currentQuestions = [];
+
+
+const sendMessageButton = document.getElementById("send-message");
+const userMessageInput = document.getElementById("user-message");
+const chatHistoryContainer = document.getElementById("chat-history");
+const resetChatButton = document.getElementById("reset-chat");
+
 
 const sectionSelect = document.getElementById("section");
 const lessonSelect = document.getElementById("lesson");
@@ -114,6 +183,15 @@ document.getElementById("generateBtn").addEventListener("click", function () {
     const section = sectionSelect.value;
     const lesson = lessonSelect.value;
     const difficulty = difficultySelect.value;
+    let chatHistory = [];
+let currentQuestions = [];
+
+const sendMessageButton = document.getElementById("send-message");
+const userMessageInput = document.getElementById("user-message");
+const chatHistoryContainer = document.getElementById("chat-history");
+const resetChatButton = document.getElementById("reset-chat");
+
+
 
     if (!section || !lesson) {
         alert("Veuillez sélectionner une section et une leçon.");
@@ -141,8 +219,16 @@ document.getElementById("generateBtn").addEventListener("click", function () {
 
         const container = document.getElementById("exam-container");
         container.innerHTML = "";
+        currentQuestions = data.questions;
+chatHistory = [];
+chatHistoryContainer.innerHTML = "";
+
 
         data.questions.forEach((question, index) => {
+            currentQuestions = data.questions;
+chatHistory = [];
+chatHistoryContainer.innerHTML = "";
+
 
             const div = document.createElement("div");
             div.className = "question-box";
@@ -200,6 +286,75 @@ function getSolution(questionId) {
         }
     });
 }
+// =========================
+// CHAT SEND MESSAGE
+// =========================
+
+sendMessageButton.addEventListener("click", function () {
+
+    const userMessage = userMessageInput.value.trim();
+    if (!userMessage) return;
+
+    displayMessage("Vous", userMessage);
+
+    userMessageInput.value = "";
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            section: sectionSelect.value,
+            lesson: lessonSelect.value,
+            difficulty: difficultySelect.value,
+            questions: currentQuestions,
+            history: chatHistory,
+            message: userMessage
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        displayMessage("AI Tutor", data.reply);
+
+        chatHistory.push(
+            { role: "user", content: userMessage },
+            { role: "assistant", content: data.reply }
+        );
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+    });
+});
+
+function displayMessage(sender, message) {
+
+    const messageDiv = document.createElement("div");
+    messageDiv.innerHTML = `
+        <p><strong>${sender}:</strong></p>
+        <div>${message}</div>
+        <hr>
+    `;
+
+    chatHistoryContainer.appendChild(messageDiv);
+    chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
+}
+
+// =========================
+// RESET CHAT
+// =========================
+
+resetChatButton.addEventListener("click", function () {
+    chatHistory = [];
+    chatHistoryContainer.innerHTML = "";
+});
 
 </script>
 
