@@ -21,8 +21,18 @@ body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
     padding: 40px;
-    background: linear-gradient(135deg, #e0f7fa, #f1f8ff);
+
+    background:
+        linear-gradient(135deg, #e0f7fa, #f1f8ff),
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+
+    background-size:
+        100% 100%,
+        40px 40px,
+        40px 40px;
 }
+
 h1 {
     text-align: center;
     margin-bottom: 30px;
@@ -157,6 +167,241 @@ button {
     margin-top: 20px;
 }
 
+.control-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    align-items: end;
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin: 30px 0;
+}
+
+.select-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.select-group label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+.select-group select {
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    background: #f9fbff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.select-group select:hover {
+    border-color: #4a90e2;
+}
+
+.select-group select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.2);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-group button {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.button-group button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.chat-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    width: 350px;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-title {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.chat-status {
+    font-size: 11px;
+    background: #4CAF50;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+}
+
+.reset-btn {
+    background: #ff5c5c;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.reset-btn:hover {
+    transform: scale(1.05);
+}
+
+.chat-messages {
+    flex: 1;                 /* this makes it fill available space */
+    overflow-y: auto;
+    padding: 15px;
+    background: #f4f7fb;
+    border-radius: 16px;
+    font-size: 14px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Input Area */
+.chat-input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Textarea */
+#user-message {
+    flex: 1;
+    height: 50px;
+    min-height: 50px;
+    max-height: 120px;
+    border-radius: 14px;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    resize: none;
+    overflow-y: auto;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+#user-message:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.2);
+}
+
+/* Buttons */
+.chat-input-area button {
+    height: 50px;
+    background: linear-gradient(135deg, #4CAF50, #2e7d32);
+    border: none;
+    border-radius: 14px;
+    padding: 0 18px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.chat-input-area button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.main-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Left side = 65% */
+.exercise-area {
+    flex: 0 0 65%;
+}
+
+/* Right side = 35% */
+.chat-card {
+    flex: 0 0 35%;
+    min-width: 320px;
+}
+
+body {
+    background: linear-gradient(
+        to bottom,
+        #dbeaf0,
+        #cfdfe6
+    );
+}
+body {
+    background-color: #d8e6ec;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    right: -150px;
+    bottom: -150px;
+    width: 700px;
+    height: 700px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23005a78' stroke-width='3' fill='none' opacity='0.05'%3E%3Ccircle cx='250' cy='250' r='180'/%3E%3Cline x1='250' y1='70' x2='250' y2='430'/%3E%3Cline x1='70' y1='250' x2='430' y2='250'/%3E%3Cline x1='140' y1='140' x2='360' y2='360'/%3E%3Cline x1='360' y1='140' x2='140' y2='360'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    z-index: -1;
+}
+.empty-state {
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    color: #5f6c7b;
+    backdrop-filter: blur(4px);
+}
+
+.empty-state h2 {
+    margin-top: 15px;
+    font-size: 22px;
+    color: #2f3e4d;
+}
+
+.empty-state p {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.empty-icon {
+    font-size: 42px;
+    opacity: 0.6;
+}
+
 
 </style>
 </head>
@@ -165,50 +410,109 @@ button {
 
 <h1>🚀 BacBoost - Générateur d'exercices Bac</h1>
 
-<select id="section">
-    <option value="">Choisir une section</option>
-    <option value="Mathematics">Mathématiques</option>
-    <option value="Science">Sciences</option>
-    <option value="Economics">Économie</option>
-    <option value="Technical">Technique</option>
-    <option value="Informatique">Informatique</option>
-</select>
+<div class="control-panel">
 
-<select id="lesson">
-    <option value="">Choisir une leçon</option>
-</select>
+    <div class="select-group">
+        <label>Section</label>
+        <select id="section">
+            <option value="">Choisir une section</option>
+            <option value="Mathematics">Mathématiques</option>
+            <option value="Science">Sciences</option>
+            <option value="Economics">Économie</option>
+            <option value="Technical">Technique</option>
+            <option value="Informatique">Informatique</option>
+        </select>
+    </div>
 
-<select id="difficultySelect">
-    <option value="easy">Facile</option>
-    <option value="medium" selected>Moyen</option>
-    <option value="hard">Difficile</option>
-</select>
+    <div class="select-group">
+        <label>Leçon</label>
+        <select id="lesson">
+            <option value="">Choisir une leçon</option>
+        </select>
+    </div>
 
-<button id="generateBtn">Générer les exercices</button>
-<button id="lessonBtn">Voir le cour</button>
+    <div class="select-group">
+        <label>Difficulté</label>
+        <select id="difficultySelect">
+            <option value="easy">Facile</option>
+            <option value="medium" selected>Moyen</option>
+            <option value="hard">Difficile</option>
+        </select>
+    </div>
+
+    <div class="button-group">
+        <button id="generateBtn">Générer</button>
+        <button id="lessonBtn">demander le cours</button>
+        <button id="toggleLessonBtn">Masquer</button>
+    </div>
+
+</div>
 
 
 <hr>
-<div id="lesson-container" class="question-box"></div>
-
-
 
 <div class="main-layout">
     <div class="exercise-area">
+        <div id="placeholder" class="empty-state">
+    <div class="empty-icon">📘</div>
+    <h2>Prêt à commencer ?</h2>
+    <p>
+        Sélectionnez une section et une leçon,
+        puis cliquez sur <strong>Générer</strong> ou
+        <strong>demander le cours</strong>.
+    </p>
+</div>
+
+
+        <!-- LESSON WILL APPEAR HERE -->
+        <div id="lesson-container" class="question-box" style="display:none;"></div>
+
+        <!-- EXERCISES -->
         <div id="exam-container"></div>
+
     </div>
 
-    <div id="chat-container">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-            <h3>AI Tutor</h3>
-            <button id="reset-chat">Reset Chat</button>
+    <div id="chat-container" class="chat-card">
+
+    <div class="chat-header">
+        <div class="chat-title">
+            🤖 AI Tutor
+            <span class="chat-status">Online</span>
         </div>
-        <div id="chat-history"></div>
-        <textarea id="user-message" placeholder="Posez votre question..."></textarea>
-        <button id="send-message">Envoyer</button>
+        <button id="reset-chat" class="reset-btn">Reset</button>
     </div>
+
+    <div id="chat-history" class="chat-messages"></div>
+
+<div class="chat-input-area">
+    <textarea id="user-message" placeholder="Posez votre question..."></textarea>
+    <button id="mic-button">🎤</button>
+    <button id="send-message">Envoyer</button>
 </div>
+
+       
+    </div>
+
+</div>
+
+</div>
+<script>
+window.MathJax = {
+  tex: {
+    packages: {'[+]': ['noerrors']},
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  options: {
+    renderActions: {
+      addMenu: []
+    }
+  }
+};
+</script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
 
 
 <script>
@@ -280,6 +584,7 @@ document.getElementById("generateBtn").addEventListener("click", function () {
             alert(data.error);
             return;
         }
+        document.getElementById("placeholder").style.display = "none";
 
         const container = document.getElementById("exam-container");
         container.innerHTML = "";
@@ -337,8 +642,8 @@ function toggleSolution(questionId) {
         return;
     }
 
-    const questionDiv = document.querySelectorAll(".question-box")[questionId - 1];
-    const questionText = questionDiv.dataset.question;
+  const questionText = currentQuestions[questionId - 1];
+
 
     solutionDiv.innerHTML = "<p>⏳ Génération de la correction...</p>";
 
@@ -427,16 +732,21 @@ sendMessageButton.addEventListener("click", function () {
 function displayMessage(sender, message) {
 
     const messageDiv = document.createElement("div");
+
     messageDiv.innerHTML = `
         <p><strong>${sender}:</strong></p>
-        <div>${message}</div>
+        <div>${marked.parse(message)}</div>
         <hr>
     `;
 
     chatHistoryContainer.appendChild(messageDiv);
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([messageDiv]);
+    }
+
     chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
 }
-
 
 // =========================
 // RESET CHAT
@@ -457,8 +767,9 @@ document.getElementById("lessonBtn").addEventListener("click", function () {
 
     const lessonContainer = document.getElementById("lesson-container");
 
+    lessonContainer.style.display = "block";
     lessonContainer.innerHTML = "⏳ Génération du cours...";
-    lessonContainer.classList.add("show");
+
 
     fetch("/lesson_content", {
         method: "POST",
@@ -472,6 +783,7 @@ document.getElementById("lessonBtn").addEventListener("click", function () {
             lessonContainer.innerHTML = "Erreur lors de la génération.";
             return;
         }
+        document.getElementById("placeholder").style.display = "none";
 
       lessonContainer.innerHTML = `
     <div class="lesson-content">
@@ -483,8 +795,71 @@ document.getElementById("lessonBtn").addEventListener("click", function () {
         if (window.MathJax) MathJax.typesetPromise();
     });
 });
+const micButton = document.getElementById("mic-button");
+const sendButton = document.getElementById("send-message");
+
+let recognition;
+let isListening = false;
+
+// Detect support properly
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        isListening = true;
+        micButton.classList.add("listening");
+        userMessageInput.placeholder = "🎤 J'écoute...";
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        micButton.classList.remove("listening");
+        userMessageInput.placeholder = "Posez votre question...";
+    };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    userMessageInput.value += " " + transcript;
+};
 
 
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+    };
+
+    micButton.addEventListener("click", () => {
+        if (!isListening) {
+            recognition.start();
+        } else {
+            recognition.stop();
+        }
+    });
+
+} else {
+    // Hide mic if unsupported
+    micButton.style.display = "none";
+}
+
+
+</script>
+<script>
+    const toggleLessonBtn = document.getElementById("toggleLessonBtn");
+    const lessonContainer = document.getElementById("lesson-container");
+
+    toggleLessonBtn.addEventListener("click", function () {
+        if (lessonContainer.style.display === "none") {
+            lessonContainer.style.display = "block";
+            toggleLessonBtn.textContent = "Masquer le cours";
+        } else {
+            lessonContainer.style.display = "none";
+            toggleLessonBtn.textContent = "Afficher le cours";
+        }
+    });
 </script>
 
 </body>

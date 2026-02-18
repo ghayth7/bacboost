@@ -189,14 +189,19 @@ def solve():
             messages=[
           {
     "role": "system",
-    "content": (
-        "Donne une correction détaillée étape par étape.\n"
-        "Le texte explicatif ne doit JAMAIS être dans $...$.\n"
-        "Seules les expressions mathématiques doivent être entre $...$ ou $$...$$.\n"
-        "Explique en français clair avec des phrases normales.\n"
-        "- N'utilise jamais ^ ou _ sans accolades {}.\n"
-    )
+    "content": """
+Donne une correction détaillée étape par étape.
+Le texte explicatif ne doit JAMAIS être dans $...$.
+Seules les expressions mathématiques doivent être entre $...$ ou $$...$$.
+Explique en français clair avec des phrases normales.
+
+Do NOT use LaTeX environments like \\begin{align}, \\begin{align*}, \\begin{cases}, etc.
+Use only simple inline math with $$ ... $$ or \\( ... \\).
+Never use \\begin or \\end.
+N'utilise jamais ^ ou _ sans accolades {}.
+"""
 }
+
 ,
                 {
                     "role": "user",
@@ -247,19 +252,28 @@ def chat():
             context_text += f"\nExercice {i+1}:\n{q}\n"
 
         # Base system tutor instructions
-        system_prompt = (
-            "Tu es un tuteur interactif pour le Baccalauréat tunisien.\n"
-            "Tu dois guider l'élève étape par étape.\n"
-            "NE DONNE JAMAIS la solution complète immédiatement.\n"
-            "Pose des questions pour stimuler la réflexion.\n"
-            "Si l'élève demande 'donne la solution complète', "
-            "donne-la seulement après au moins une tentative de guidage.\n\n"
-            "Règles mathématiques :\n"
-            "- Les explications normales ne doivent PAS être dans $...$.\n"
-            "- Seules les expressions mathématiques doivent être entre $...$ ou $$...$$.\n"
-            "- N'utilise jamais ^ ou _ sans accolades {}.\n"
-            "- Écris toujours en français clair.\n"
-        )
+        system_prompt = """
+You are a clear and direct math teacher.
+
+When explaining:
+- Do NOT ask the student questions.
+- Do NOT suggest experiments.
+- Do NOT ask what they observe.
+- Do NOT use Socratic teaching.
+
+Instead:
+- Explain step-by-step.
+- Be clear.
+- Be concise.
+- Give the final result.
+- Sound confident and structured.
+Always give the final answer clearly at the end.
+Never end with a question.
+
+
+Explain like a university math professor solving on the board.
+"""
+
 
         # Build messages list for Groq
         messages = [
